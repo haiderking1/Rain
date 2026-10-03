@@ -46,6 +46,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         DownloadCommand = new RelayCommand(() =>
         {
             if (IsDownloading) _downloadCts?.Cancel();
+            else if (NeedsTools) _ = GetToolsAsync();
             else _ = DownloadAsync();
         });
 
@@ -284,7 +285,62 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         }
     }
 
-    public string DownloadButtonText => IsDownloading ? "Cancel" : "Download";
+    public string DownloadButtonText => IsDownloading ? "Cancel" : NeedsTools ? "Get tools" : "Download";
+
+    List<Tools.Tool> _missingTools = [];
+    public bool NeedsTools => _missingTools.Count > 0;
+
+    void RefreshTools()
+    {
+        _missingTools = Tools.Missing();
+        OnPropertyChanged(nameof(NeedsTools));
+        OnPropertyChanged(nameof(DownloadButtonText));
+        if (!NeedsTools) return;
+
+        var names = string.Join(", ", _missingTools.Select(t => t.Name));
+        var size = _missingTools.Sum(t => t.SizeMb);
+        DownloadStatus = $"Downloading songs needs {names} (about {size} MB, one time). Want Rain to get {(_missingTools.Count == 1 ? "it" : "them")}?";
+    }
+
+    async Task GetToolsAsync()
+    {
+        var cts = _downloadCts = new CancellationTokenSource();
+        IsDownloading = true;
+        DownloadProgress = 0;
+        var progress = new Progress<(string Tool, double Percent)>(p =>
+        {
+            if (!IsDownloading) return;
+            DownloadProgress = p.Percent;
+            DownloadStatus = $"Getting {p.Tool}… {p.Percent:0}%";
+        });
+
+        var ready = false;
+        try
+        {
+            await Tools.InstallMissingAsync(progress, cts.Token);
+            DownloadStatus = "Tools ready.";
+            ready = true;
+        }
+        catch (OperationCanceledException)
+        {
+            DownloadStatus = "Cancelled.";
+        }
+        catch (Exception ex)
+        {
+            DownloadStatus = $"Couldn't get the tools: {ex.Message}";
+        }
+        finally
+        {
+            IsDownloading = false;
+            cts.Dispose();
+            if (_downloadCts == cts) _downloadCts = null;
+        }
+
+        var status = DownloadStatus;
+        RefreshTools();
+        if (NeedsTools) DownloadStatus = status + " " + DownloadStatus;
+        else if (ready && DownloadUrl.Trim().Length > 0) await DownloadAsync();
+    }
 
     double _downloadProgress;
     public double DownloadProgress
@@ -308,7 +364,10 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     void ToggleDownload()
     {
         IsDownloadOpen = !IsDownloadOpen;
-        if (!IsDownloadOpen || IsDownloading || DownloadUrl.Length > 0) return;
+        if (!IsDownloadOpen || IsDownloading) return;
+
+        RefreshTools();
+        if (DownloadUrl.Length > 0) return;
 
         // Pre-fill a link that's already on the clipboard.
         try

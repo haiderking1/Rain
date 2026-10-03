@@ -19,7 +19,7 @@ public static partial class Downloader
     [GeneratedRegex(@"\x1B\[[0-9;]*m")]
     private static partial Regex AnsiCodes();
 
-    public static string? FindYtDlp() => FindOnPath("yt-dlp.exe");
+    public static string? FindYtDlp() => Tools.Find("yt-dlp.exe");
 
     /// <summary>
     /// Downloads <paramref name="url"/> as m4a into <paramref name="folder"/> and returns the file path.
@@ -27,7 +27,7 @@ public static partial class Downloader
     /// </summary>
     public static async Task<string> DownloadAsync(string url, string folder, IProgress<double> progress, CancellationToken ct)
     {
-        var exe = FindYtDlp() ?? throw new InvalidOperationException("yt-dlp isn't installed (scoop install yt-dlp ffmpeg).");
+        var exe = FindYtDlp() ?? throw new InvalidOperationException("yt-dlp isn't installed.");
 
         var psi = new ProcessStartInfo(exe)
         {
@@ -38,7 +38,7 @@ public static partial class Downloader
             StandardOutputEncoding = Encoding.UTF8,
             StandardErrorEncoding = Encoding.UTF8,
         };
-        psi.Environment["PATH"] = FreshPath();
+        psi.Environment["PATH"] = Tools.SearchPath; // so yt-dlp finds ffmpeg and deno too
         psi.Environment["PYTHONIOENCODING"] = "utf-8";
 
         foreach (var arg in new[]
@@ -105,27 +105,5 @@ public static partial class Downloader
             throw new InvalidOperationException(lastError.Length > 0 ? lastError : $"yt-dlp failed (exit code {process.ExitCode}).");
 
         return filePath;
-    }
-
-    /// <summary>PATH as it is now in the registry, so tools installed after Rain started are found.</summary>
-    static string FreshPath() => string.Join(';', new[]
-    {
-        Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine),
-        Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User),
-        Environment.GetEnvironmentVariable("PATH"),
-    }.Where(p => !string.IsNullOrEmpty(p)));
-
-    static string? FindOnPath(string exe)
-    {
-        foreach (var dir in FreshPath().Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
-        {
-            try
-            {
-                var candidate = Path.Combine(Environment.ExpandEnvironmentVariables(dir), exe);
-                if (File.Exists(candidate)) return candidate;
-            }
-            catch (ArgumentException) { }
-        }
-        return null;
     }
 }
