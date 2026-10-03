@@ -7,11 +7,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Assets\Rain.ico</ApplicationIcon>
+    <StartupObject>Rain.Program</StartupObject>
+    <Version>1.0.0</Version>
+    <Product>Rain</Product>
+    <Authors>haiderking1</Authors>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="NAudio" Version="3.1.0" />
     <PackageReference Include="TagLibSharp" Version="2.3.0" />
+    <PackageReference Include="Velopack" Version="1.2.161" />
   </ItemGroup>
 
   <ItemGroup>
