@@ -1,6 +1,8 @@
-# Rain
+<p align="center"><img src="assets/logo.png" width="128" alt="Rain logo"></p>
 
-A dark, minimal local music player for Windows, with a blurred (acrylic) window on Windows 11.
+<h1 align="center">Rain</h1>
+
+<p align="center">A dark, minimal local music player for Windows, with a blurred (acrylic) window on Windows 11.</p>
 
 - Plays mp3, flac, m4a/aac, wav, wma and aiff from a folder you pick
 - Cover art, shuffle, repeat, search, keyboard shortcuts

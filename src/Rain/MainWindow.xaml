@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:Rain"
         Title="{Binding WindowTitle}"
+        Icon="Assets/Rain.ico"
         Width="1100" Height="700" MinWidth="780" MinHeight="480"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource Bg}" Foreground="{StaticResource Text}"
@@ -53,9 +54,13 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <StackPanel VerticalAlignment="Center">
-                <TextBlock Text="Rain" FontSize="22" FontWeight="SemiBold"/>
-                <TextBlock Text="{Binding Status}" Foreground="{StaticResource Muted}" FontSize="12" Margin="1,2,0,0"/>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Image Source="Assets/logo-64.png" Width="40" Height="40" VerticalAlignment="Center"
+                       RenderOptions.BitmapScalingMode="HighQuality"/>
+                <StackPanel VerticalAlignment="Center" Margin="12,0,0,0">
+                    <TextBlock Text="Rain" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding Status}" Foreground="{StaticResource Muted}" FontSize="12" Margin="1,2,0,0"/>
+                </StackPanel>
             </StackPanel>
             <TextBox x:Name="SearchBox" Grid.Column="2" Width="260" Style="{StaticResource InputBox}" local:Ui.Icon="&#xE721;"
                      Tag="Search  (Ctrl+F)" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
