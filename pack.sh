@@ -17,6 +17,7 @@ vpk pack \
   --packVersion "$version" \
   --packDir publish \
   --mainExe Rain.exe \
+  --runtime win-x64 \
   --packTitle Rain \
   --packAuthors haiderking1 \
   --icon src/Rain/Assets/Rain.ico \
