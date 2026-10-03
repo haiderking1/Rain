@@ -62,6 +62,15 @@
                     <TextBlock Text="{Binding Status}" Foreground="{StaticResource Muted}" FontSize="12" Margin="1,2,0,0"/>
                 </StackPanel>
             </StackPanel>
+            <Button Grid.Column="1" Style="{StaticResource PillButton}" HorizontalAlignment="Right" Margin="0,0,12,0"
+                    AutomationProperties.Name="Restart to update" ToolTip="Restart Rain to finish updating"
+                    Command="{Binding RestartToUpdateCommand}"
+                    Visibility="{Binding IsUpdateReady, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE72C;" FontFamily="{StaticResource Icons}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding UpdateText}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
             <TextBox x:Name="SearchBox" Grid.Column="2" Width="260" Style="{StaticResource InputBox}" local:Ui.Icon="&#xE721;"
                      Tag="Search  (Ctrl+F)" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
             <Button AutomationProperties.Name="Download" Grid.Column="3" Style="{StaticResource IconButton}" Content="&#xE896;" Margin="8,0,0,0"

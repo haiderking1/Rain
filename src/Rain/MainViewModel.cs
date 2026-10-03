@@ -50,8 +50,50 @@ public sealed class MainViewModel : ObservableObject, IDisposable
             else _ = DownloadAsync();
         });
 
+        RestartToUpdateCommand = new RelayCommand(RestartToUpdate);
+
         if (_settings.Folder is { } folder && Directory.Exists(folder))
             _ = LoadFolderAsync(folder);
+
+        _ = CheckForUpdatesAsync();
+    }
+
+    // ---- Updates ----
+
+    readonly Updater _updater = new();
+    bool _restartingForUpdate;
+
+    public ICommand RestartToUpdateCommand { get; }
+
+    bool _isUpdateReady;
+    public bool IsUpdateReady
+    {
+        get => _isUpdateReady;
+        private set => SetField(ref _isUpdateReady, value);
+    }
+
+    public string UpdateText => $"Update to {_updater.ReadyVersion}";
+
+    async Task CheckForUpdatesAsync()
+    {
+        await Task.Delay(TimeSpan.FromSeconds(3)); // let startup finish first
+        try
+        {
+            if (!await _updater.CheckAndDownloadAsync()) return;
+            OnPropertyChanged(nameof(UpdateText));
+            IsUpdateReady = true;
+        }
+        catch (Exception)
+        {
+            // Offline or GitHub hiccup: try again next launch.
+        }
+    }
+
+    void RestartToUpdate()
+    {
+        _restartingForUpdate = true;
+        Dispose();
+        _updater.RestartNow();
     }
 
     public ICommand OpenFolderCommand { get; }
@@ -692,5 +734,6 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         _downloadCts?.Cancel();
         _settings.Save();
         _player.Dispose();
+        if (IsUpdateReady && !_restartingForUpdate) _updater.ApplyOnExit();
     }
 }

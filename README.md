@@ -8,6 +8,12 @@
 - Cover art, shuffle, repeat, search, keyboard shortcuts
 - Download songs by link (YouTube, SoundCloud, Bandcamp…) straight into your library, tagged with the cover embedded
 
+## Download
+
+Grab **Rain-win-Setup.exe** from the [latest release](https://github.com/haiderking1/Rain/releases/latest) and run it. No admin needed; it installs the .NET runtime if you don't have it, and Rain keeps itself up to date after that.
+
+The first time you use the download button, Rain offers to fetch yt-dlp, ffmpeg and deno for you.
+
 ## Build
 
 Needs the [.NET 10 SDK](https://dotnet.microsoft.com/download).
