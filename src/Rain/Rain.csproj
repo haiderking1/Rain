@@ -8,7 +8,7 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Assets\Rain.ico</ApplicationIcon>
     <StartupObject>Rain.Program</StartupObject>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <Product>Rain</Product>
     <Authors>haiderking1</Authors>
   </PropertyGroup>
