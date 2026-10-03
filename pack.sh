@@ -21,6 +21,7 @@ vpk pack \
   --packAuthors haiderking1 \
   --icon src/Rain/Assets/Rain.ico \
   --splashImage assets/logo.png \
+  --splashProgressColor "#7AA2F7" \
   --framework net10-x64-desktop \
   --outputDir releases
 
